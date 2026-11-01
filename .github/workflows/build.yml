@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Windows .exe
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow
+      - name: Build WowFarmBot.exe
+        run: >
+          pyinstaller --noconfirm --clean --onefile --windowed
+          --name WowFarmBot
+          --add-data "config.example.json;."
+          gui.py
+      - name: Zip
+        run: Compress-Archive -Path dist/WowFarmBot.exe -DestinationPath WowFarmBot-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WowFarmBot-windows-x64
+          path: WowFarmBot-windows-x64.zip
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: WowFarmBot-windows-x64.zip
+
+  macos:
+    name: macOS app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow
+      - name: Build WowFarmBot.app
+        run: >
+          pyinstaller --noconfirm --clean --windowed
+          --name WowFarmBot
+          --osx-bundle-identifier de.wowfarmbot.app
+          --add-data "config.example.json:."
+          gui.py
+      - name: Zip
+        run: ditto -c -k --sequesterRsrc --keepParent dist/WowFarmBot.app WowFarmBot-macos-arm64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WowFarmBot-macos-arm64
+          path: WowFarmBot-macos-arm64.zip
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: WowFarmBot-macos-arm64.zip
+          generate_release_notes: true
