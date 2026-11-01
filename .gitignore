@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.log
+
+# personal data: real account, server and learned terrain
+config.json
+ANLEITUNG.md
+nav/
+
+.venv/
+build/
+dist/
+*.spec
+.DS_Store
+.freebuff/

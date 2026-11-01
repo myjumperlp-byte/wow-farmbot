@@ -1,0 +1,51 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "auth_port": 13724,
+    "realm": "MockRealm",
+    "world_host": "127.0.0.1",
+    "world_port": 18085
+  },
+  "account": {
+    "username": "TEST",
+    "password": "TEST"
+  },
+  "character": "Botty",
+  "locale": "deDE",
+  "timezone_bias": -60,
+  "behavior": {
+    "hotspots": [],
+    "mob_entries": [],
+    "ignore_entries": [],
+    "melee": true,
+    "melee_range": 4.5,
+    "spell_id": 0,
+    "spell_range": 30,
+    "spell_interval_ms": 2500,
+    "max_target_distance": 40,
+    "leash_range": 70,
+    "loot": true,
+    "rest_hp_pct": 30,
+    "rest_until_hp_pct": 95,
+    "max_rest_seconds": 300,
+    "max_session_minutes": 10,
+    "break_every_minutes": 50,
+    "break_minutes": 5,
+    "humanize": true,
+    "status_seconds": 15,
+    "spells": [],
+    "heal_spell_id": 0,
+    "heal_hp_pct": 45,
+    "combat_heal_max_casts": 2,
+    "potion_entry": 33447,
+    "potion_hp_pct": 60,
+    "potion_cooldown_ms": 60000,
+    "drink_entry": 0,
+    "drink_mana_pct": 35,
+    "food_entry": 0,
+    "food_hp_pct": 50,
+    "rest_mana_pct": 20,
+    "rest_until_mana_pct": 80,
+    "death_wait_minutes": 5
+  }
+}
