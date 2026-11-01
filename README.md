@@ -73,7 +73,7 @@ Every release is built by GitHub Actions from the tagged commit (see
 ## Requirements
 
 - Python 3.9 or newer
-- `PySide6` (window), `Pillow` (map and icon images) — the headless bot itself only uses the standard library
+- `PySide6` (window), `Pillow` (map and icon images), `mpyq` (reads the client's MPQ archives for zone maps) — the headless bot itself only uses the standard library
 - A server that accepts build 12340 (3.3.5a)
 
 Tested on macOS; the bot is plain sockets and asyncio, so Linux and Windows work the same.
@@ -84,7 +84,7 @@ Tested on macOS; the bot is plain sockets and asyncio, so Linux and Windows work
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install PySide6 Pillow
+.venv/bin/pip install PySide6 Pillow mpyq
 .venv/bin/python gui.py
 ```
 
