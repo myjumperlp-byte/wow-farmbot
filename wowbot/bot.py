@@ -16,7 +16,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import opcodes
+from . import app_support_dir, opcodes
 from .auth import AuthClient, Realm
 from .filters import LootRules, MobRules
 from .mapdata import ClientMaps, find_client_dir
@@ -3548,7 +3548,7 @@ class FarmBot:
                 "vorab erkannt (map.client in der Config setzen)"
             )
             return
-        cache = Path.home() / "Library" / "Application Support" / "WowFarmBot" / "maps"
+        cache = app_support_dir("maps")
         cell_size = float(self.behavior.get("path_cell_size", 5.0))
         max_slope = float(self.behavior.get("terrain_max_slope", 1.6))
         water_depth = float(self.behavior.get("terrain_water_depth", 1.2))
@@ -3603,7 +3603,7 @@ class FarmBot:
         configured = str(self.behavior.get("path_storage") or "").strip()
         if configured:
             return Path(configured).expanduser()
-        return Path.home() / "Library" / "Application Support" / "WowFarmBot" / "nav"
+        return app_support_dir("nav")
 
     async def close(self) -> None:
         self.running = False

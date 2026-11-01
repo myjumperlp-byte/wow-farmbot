@@ -171,8 +171,8 @@ STRINGS: "dict[str, dict[str, str]]" = {
         "Linksklick in die Karte = hinlaufen (auch mitten im Kampf), Klick auf einen Mob = diesen zuerst angreifen":
             "Left click on the map = walk there (mid-fight too), click a mob = attack that one first",
         "Hindernisse: noch keine gelernt": "obstacles: none learned yet",
-        "Gelerntes Gelände dieser Karte (siehe ~/Library/Application Support/WowFarmBot/nav)":
-            "Terrain learned for this map (see ~/Library/Application Support/WowFarmBot/nav)",
+        "Gelerntes Gelände dieser Karte (im Ordner „nav“ des App-Datenordners)":
+            "Terrain learned for this map (in the “nav” folder of the app data directory)",
         "Nur während der Bot läuft: die aktuelle Karte ist sonst nicht bekannt.":
             "Only while the bot runs: otherwise the current map is unknown.",
         "Hindernisse zurücksetzen": "Reset obstacles",

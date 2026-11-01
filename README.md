@@ -8,6 +8,21 @@ while you play the very same account in your real client on the side.
 
 ![In-game map tab](docs/screenshots/map.png)
 
+## Download
+
+Ready to run, no Python needed — see [Releases](https://github.com/myjumperlp-byte/wow-farmbot/releases/latest):
+
+| File | System |
+| --- | --- |
+| `WowFarmBot-windows-x64.zip` | Windows 10/11 (64 bit) — unzip, run `WowFarmBot.exe` |
+| `WowFarmBot-macos-arm64.zip` | macOS on Apple Silicon — unzip, open `WowFarmBot.app` |
+
+Both builds are unsigned. On Windows, SmartScreen shows *More info → Run anyway*.
+on macOS, right-click the app and choose *Open* the first time.
+
+Every release is built by GitHub Actions from the tagged commit (see
+[build.yml](.github/workflows/build.yml)), so the binaries match the source.
+
 ## What it can do
 
 **Farming loop**

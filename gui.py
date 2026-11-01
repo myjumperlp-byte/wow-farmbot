@@ -9,8 +9,8 @@ Als Mac-Programm packen (im Projektordner):
     .venv/bin/python -m PyInstaller --windowed --name WowFarmBot \
         --osx-bundle-identifier de.wowfarmbot.app gui.py
 
-Das gepackte Programm liest und schreibt seine Config unter
-~/Library/Application Support/WowFarmBot/config.json.
+Das gepackte Programm liest und schreibt seine Config im App-Datenordner
+(macOS: ~/Library/Application Support/WowFarmBot, Windows: %APPDATA%/WowFarmBot).
 """
 
 from __future__ import annotations
@@ -70,6 +70,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from wowbot import APP_NAME, app_support_dir
 from wowbot.auth import LogonError
 from wowbot.bot import FarmBot
 from wowbot.filters import LootRules, MobRules
@@ -88,7 +89,7 @@ from wowbot.protocol_profile import (
 )
 from wowbot.world import WorldError
 
-APP_NAME = "WowFarmBot"
+
 LOG_FORMAT = "%(asctime)s %(levelname)-7s %(message)s"
 LOG_DATE = "%H:%M:%S"
 MAX_LOG_LINES = 4000
@@ -104,7 +105,7 @@ COLOR_LOOT = "#61afef"
 # ---------------------------------------------------------------------- Pfade
 def support_dir() -> Path:
     """Ordner für Config und Logdateien (überlebt Updates der App)."""
-    path = Path.home() / "Library" / "Application Support" / APP_NAME
+    path = app_support_dir()
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -118,6 +119,21 @@ def bundled_path(name: str) -> Path | None:
             return candidate
     candidate = Path(__file__).resolve().parent / name
     return candidate if candidate.exists() else None
+
+
+def open_in_system(path: Path, reveal: bool = False) -> None:
+    """Datei im System öffnen (macOS, Windows, Linux) oder ihren Ordner zeigen."""
+    if sys.platform == "darwin":
+        args = ["open", "-R" if reveal else "-e", str(path)]
+    elif sys.platform.startswith("win"):
+        if reveal:
+            args = ["explorer", "/select,", str(path)]
+        else:
+            os.startfile(str(path))  # type: ignore[attr-defined]
+            return
+    else:
+        args = ["xdg-open", str(path.parent if reveal else path)]
+    subprocess.run(args, check=False)
 
 
 def seed_candidates() -> list[Path]:
@@ -1816,7 +1832,7 @@ class WowFarmBotWindow(QMainWindow):
         self.obstacle_label = QLabel("Hindernisse: noch keine gelernt")
         self.obstacle_label.setStyleSheet(f"color: {PARCHMENT_DIM};")
         self.obstacle_label.setToolTip(
-            "Gelerntes Gelände dieser Karte (siehe ~/Library/Application Support/WowFarmBot/nav)"
+            "Gelerntes Gelände dieser Karte (im Ordner „nav“ des App-Datenordners)"
         )
         grid.addWidget(self.obstacle_label, 5, 0, 1, 3)
 
@@ -3303,7 +3319,7 @@ class WowFarmBotWindow(QMainWindow):
     def _open_config(self) -> None:
         try:
             self.config.save(self.config.data)
-            subprocess.run(["open", "-e", str(self.config.path)], check=False)
+            open_in_system(self.config.path)
         except OSError as exc:
             QMessageBox.critical(
                 self, APP_NAME, tr("Konfiguration nicht zu öffnen:\n{error}", error=exc)
@@ -3311,7 +3327,7 @@ class WowFarmBotWindow(QMainWindow):
 
     def _reveal_log(self) -> None:
         try:
-            subprocess.run(["open", "-R", str(self.log_file)], check=False)
+            open_in_system(self.log_file, reveal=True)
         except OSError as exc:
             QMessageBox.critical(
                 self, APP_NAME, tr("Logdatei nicht zu öffnen:\n{error}", error=exc)
@@ -3376,7 +3392,7 @@ def main(argv: "list[str] | None" = None) -> int:
     parser.add_argument(
         "--config",
         type=Path,
-        help="eigene config.json benutzen (Standard: ~/Library/Application Support/WowFarmBot)",
+        help="eigene config.json benutzen (Standard: App-Datenordner)",
     )
     parser.add_argument(
         "--selftest",
