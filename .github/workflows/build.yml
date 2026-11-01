@@ -26,6 +26,21 @@ jobs:
           --hidden-import mpyq
           --add-data "config.example.json;."
           gui.py
+      - name: Smoke test against the mock server
+        shell: pwsh
+        run: |
+          $env:QT_QPA_PLATFORM = "offscreen"
+          $mock = Start-Process -FilePath python -ArgumentList "tools/mock_server.py","--rounds","2" -PassThru -RedirectStandardOutput mock.log -RedirectStandardError mock.err
+          Start-Sleep -Seconds 3
+          $app = Start-Process -FilePath "dist\WowFarmBot.exe" -ArgumentList "--config","config.mock.json","--selftest","25" -PassThru -Wait
+          "Exitcode der App: $($app.ExitCode)"
+          if ($app.ExitCode -ne 0) { Get-Content mock.log; throw "App wurde mit $($app.ExitCode) beendet" }
+          $log = Get-ChildItem "$env:APPDATA\WowFarmBot\logs" -Filter *.log | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $log) { throw "Keine Logdatei geschrieben" }
+          $text = Get-Content $log.FullName -Raw
+          if ($text -notmatch '\[kill\]') { Get-Content mock.log; throw "Kein Kill im Log - Bot hat nicht gefarmt" }
+          "OK: Bot hat gegen den Mock gefarmt"
+          Stop-Process -Id $mock.Id -Force
       - name: Zip
         run: Compress-Archive -Path dist/WowFarmBot.exe -DestinationPath WowFarmBot-windows-x64.zip
       - uses: actions/upload-artifact@v4
@@ -56,6 +71,18 @@ jobs:
           --hidden-import mpyq
           --add-data "config.example.json:."
           gui.py
+      - name: Smoke test against the mock server
+        run: |
+          python tools/mock_server.py --rounds 2 > mock.log 2>&1 &
+          MOCK=$!
+          sleep 3
+          QT_QPA_PLATFORM=offscreen dist/WowFarmBot.app/Contents/MacOS/WowFarmBot \
+            --config config.mock.json --selftest 25
+          kill $MOCK 2>/dev/null || true
+          LOG=$(ls -t "$HOME/Library/Application Support/WowFarmBot/logs"/*.log | head -1)
+          test -n "$LOG" || { echo "Keine Logdatei geschrieben"; exit 1; }
+          grep -q "\[kill\]" "$LOG" || { cat mock.log; echo "Kein Kill im Log - Bot hat nicht gefarmt"; exit 1; }
+          echo "OK: Bot hat gegen den Mock gefarmt"
       - name: Zip
         run: ditto -c -k --sequesterRsrc --keepParent dist/WowFarmBot.app WowFarmBot-macos-arm64.zip
       - uses: actions/upload-artifact@v4
