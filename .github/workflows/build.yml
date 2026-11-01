@@ -18,11 +18,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow
+        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow mpyq
       - name: Build WowFarmBot.exe
         run: >
           pyinstaller --noconfirm --clean --onefile --windowed
           --name WowFarmBot
+          --hidden-import mpyq
           --add-data "config.example.json;."
           gui.py
       - name: Zip
@@ -46,12 +47,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow
+        run: python -m pip install --upgrade pip pyinstaller PySide6 pillow mpyq
       - name: Build WowFarmBot.app
         run: >
           pyinstaller --noconfirm --clean --windowed
           --name WowFarmBot
           --osx-bundle-identifier de.wowfarmbot.app
+          --hidden-import mpyq
           --add-data "config.example.json:."
           gui.py
       - name: Zip
